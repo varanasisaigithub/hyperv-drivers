@@ -1,0 +1,24 @@
+Create the below directories if they does not exist already
+- mkdir /usr/local/hyperv
+- mkdir /var/opt/hyperv
+
+Copy all the Script files and source files to /usr/local/hyperv 
+- cp -R * /usr/local/hyperv/
+Check /usr/local/hyperv folder for files
+
+How to compile the daemon code 
+- gcc -o hv_kvp_daemon hv_kvp_daemon.c
+
+Set the exectuing permissions for script and executable using chmod command
+- chmod 755 hv_get_dns_info hv_get_dhcp_info hv_set_ifconfig hv_kvp_daemon
+
+Copy hv_kvpd script to /etc/rc.d/
+- cp hv_kvpd /etc/rc.d/
+Set exectuing permissions using chmod command 
+- chmod 755 hv_kvpd
+
+- Edit rc.conf file - Add 
+hv_kvp_daemon_enable="YES"
+
+Reboot the machine - it will start hv_kvp_daemon and load hv_utils.ko driver.
+- reboot
