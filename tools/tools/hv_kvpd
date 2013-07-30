@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# $FreeBSD: src/etc/rc.d/inetd,v 1.6.2.1.6.1 2010/12/21 17:09:25 kensmith Exp $
+#
+
+# PROVIDE: hv_kvpd
+# REQUIRE: DAEMON LOGIN cleanvar devfs
+
+. /etc/rc.subr
+
+name="hv_kvp_daemon"
+rcvar=`set_rcvar`
+command="/usr/local/hyperv/${name}"
+sysctl dev.hv_kvp_daemon_ack=1
+required_dirs="/var/opt/hyperv"
+
+load_rc_config $name
+run_rc_command "$1"
