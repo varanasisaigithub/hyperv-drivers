@@ -761,7 +761,7 @@ user_host_kvp_msg(void)
 		host_exchg_data->value_size = 2 * (hvalue_len + 1);
 		host_exchg_data->value_type = HV_REG_SZ;
 
-		if ((hkey_len < 0) || (hvalue_len < 0)) return(HV_E_FAIL);
+		if ((hkey_len < 0) || (hvalue_len < 0)) return(HV_KVP_E_FAIL);
 		return (KVP_SUCCESS);
 
 	case HV_KVP_OP_GET:
@@ -777,10 +777,10 @@ user_host_kvp_msg(void)
 		/* Use values by string */
 		host_exchg_data->value_type = HV_REG_SZ; 
 		
-		if ((hkey_len < 0) || (hvalue_len < 0)) return(HV_E_FAIL);
+		if ((hkey_len < 0) || (hvalue_len < 0)) return(HV_KVP_E_FAIL);
 		return (KVP_SUCCESS);
 	default:
-		return(HV_E_FAIL);
+		return(HV_KVP_E_FAIL);
 	}
 }
 
@@ -800,7 +800,7 @@ kvp_respond_host(int error)
 	hv_icmsg_hdrp = (struct hv_vmbus_icmsg_hdr *)
 		&kvp_msg_state.rcv_buf[sizeof(struct hv_vmbus_pipe_hdr)];
 
-	if (error) error = HV_E_FAIL;
+	if (error) error = HV_KVP_E_FAIL;
 	hv_icmsg_hdrp->status = error;
 	hv_icmsg_hdrp->icflags = 
 		HV_ICMSGHDRFLAG_TRANSACTION | HV_ICMSGHDRFLAG_RESPONSE;
@@ -914,20 +914,20 @@ hv_kvp_process_msg(void *p)
 			register_done = FALSE;
 			kvp_msg_state.kvp_ready = FALSE;
 		}
-       		kvp_respond_host(HV_E_FAIL);
+       		kvp_respond_host(HV_KVP_E_FAIL);
 		return;
 	}
 
 	/* Rcv response from user on Unix Socket */
-	hv_user_kvp_msg.hdr.error = HV_E_FAIL;
+	hv_user_kvp_msg.hdr.error = HV_KVP_E_FAIL;
 	error = kvp_rcv_user();
 	if ((error == KVP_SUCCESS) && 
-		(hv_user_kvp_msg.hdr.error != HV_E_FAIL)) {
+		(hv_user_kvp_msg.hdr.error != HV_KVP_E_FAIL)) {
 		/* Convert user kvp to host kvp and then respond */
 		error = user_host_kvp_msg();
 		if (error != KVP_SUCCESS) {
 			printf("kvp_process:user to host kvpmsg conv failed\n");
-			kvp_respond_host(HV_E_FAIL);
+			kvp_respond_host(HV_KVP_E_FAIL);
 		}
 		else {
                         kvp_respond_host(hv_user_kvp_msg.hdr.error);
@@ -942,7 +942,7 @@ hv_kvp_process_msg(void *p)
 			register_done = FALSE;
 			kvp_msg_state.kvp_ready = FALSE;
 		}
-		kvp_respond_host(HV_E_FAIL);
+		kvp_respond_host(HV_KVP_E_FAIL);
 	} 
 	return;
 }
